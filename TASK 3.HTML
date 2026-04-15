@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced To-Do</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;
+  justify-content:center;
+  padding:20px;
+  color:#333;
+}
+
+.app {
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  width:350px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.dark {
+  background:#111;
+  color:white;
+}
+
+h2 { text-align:center; }
+
+input, select {
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  border-radius:8px;
+}
+
+button {
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.add { background:#4caf50; color:white; width:100%; }
+.toggle { background:black; color:white; }
+
+ul { list-style:none; padding:0; }
+
+li {
+  background:#f1f1f1;
+  margin:8px 0;
+  padding:10px;
+  border-radius:8px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.completed { text-decoration: line-through; color:gray; }
+
+.low { color:green; }
+.med { color:orange; }
+.high { color:red; }
+</style>
+</head>
+
+<body>
+
+<div class="app" id="app">
+  <button class="toggle" onclick="toggleTheme()">🌙</button>
+  <h2>To-Do App</h2>
+
+  <input id="task" placeholder="Enter task">
+  <select id="priority">
+    <option value="low">Low</option>
+    <option value="med">Medium</option>
+    <option value="high">High</option>
+  </select>
+
+  <button class="add" onclick="addTask()">Add Task</button>
+
+  <input id="search" placeholder="Search..." oninput="render()">
+
+  <h3>Pending</h3>
+  <ul id="pending"></ul>
+
+  <h3>Completed</h3>
+  <ul id="done"></ul>
+
+  <p id="count"></p>
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function save(){
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function addTask(){
+  let text = document.getElementById("task").value;
+  let p = document.getElementById("priority").value;
+
+  if(text==="") return;
+
+  tasks.push({text, p, done:false});
+  document.getElementById("task").value="";
+  save();
+  render();
+}
+
+function toggle(i){
+  tasks[i].done = !tasks[i].done;
+  save();
+  render();
+}
+
+function del(i){
+  tasks.splice(i,1);
+  save();
+  render();
+}
+
+function edit(i){
+  let newText = prompt("Edit task:", tasks[i].text);
+  if(newText) tasks[i].text = newText;
+  save();
+  render();
+}
+
+function render(){
+  let p = document.getElementById("pending");
+  let d = document.getElementById("done");
+  let q = document.getElementById("search").value.toLowerCase();
+
+  p.innerHTML="";
+  d.innerHTML="";
+
+  tasks.forEach((t,i)=>{
+    if(!t.text.toLowerCase().includes(q)) return;
+
+    let li = document.createElement("li");
+    li.className = t.done ? "completed" : "";
+
+    li.innerHTML = `
+      <span class="${t.p}">${t.text}</span>
+      <div>
+        <button onclick="toggle(${i})">✔</button>
+        <button onclick="edit(${i})">✏</button>
+        <button onclick="del(${i})">🗑</button>
+      </div>
+    `;
+
+    if(t.done) d.appendChild(li);
+    else p.appendChild(li);
+  });
+
+  document.getElementById("count").innerText =
+    "Total: "+tasks.length+
+    " | Pending: "+tasks.filter(t=>!t.done).length+
+    " | Done: "+tasks.filter(t=>t.done).length;
+}
+
+function toggleTheme(){
+  document.getElementById("app").classList.toggle("dark");
+}
+
+render();
+</script>
+
+</body>
+</html>

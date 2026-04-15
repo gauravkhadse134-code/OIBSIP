@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login System</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container {
+  background:white;
+  padding:25px;
+  border-radius:15px;
+  width:300px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  text-align:center;
+}
+
+input {
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+}
+
+button {
+  width:100%;
+  padding:10px;
+  background:#4caf50;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.link {
+  color:blue;
+  cursor:pointer;
+  margin-top:10px;
+  display:block;
+}
+
+.hidden { display:none; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Register -->
+  <div id="register">
+    <h2>Register</h2>
+    <input id="regUser" placeholder="Username">
+    <input id="regPass" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <span class="link" onclick="showLogin()">Already have account? Login</span>
+  </div>
+
+  <!-- Login -->
+  <div id="login" class="hidden">
+    <h2>Login</h2>
+    <input id="logUser" placeholder="Username">
+    <input id="logPass" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <span class="link" onclick="showRegister()">Create account</span>
+  </div>
+
+  <!-- Secure Page -->
+  <div id="secure" class="hidden">
+    <h2>Welcome 🎉</h2>
+    <p>You are logged in!</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+</div>
+
+<script>
+function showLogin(){
+  document.getElementById("register").classList.add("hidden");
+  document.getElementById("login").classList.remove("hidden");
+}
+
+function showRegister(){
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("register").classList.remove("hidden");
+}
+
+function register(){
+  let u = document.getElementById("regUser").value;
+  let p = document.getElementById("regPass").value;
+
+  if(u==="" || p===""){
+    alert("Fill all fields");
+    return;
+  }
+
+  localStorage.setItem("user", u);
+  localStorage.setItem("pass", p);
+
+  alert("Registered Successfully!");
+  showLogin();
+}
+
+function login(){
+  let u = document.getElementById("logUser").value;
+  let p = document.getElementById("logPass").value;
+
+  let storedUser = localStorage.getItem("user");
+  let storedPass = localStorage.getItem("pass");
+
+  if(u===storedUser && p===storedPass){
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("secure").classList.remove("hidden");
+  } else {
+    alert("Invalid credentials");
+  }
+}
+
+function logout(){
+  document.getElementById("secure").classList.add("hidden");
+  document.getElementById("login").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
